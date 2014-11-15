@@ -2,12 +2,13 @@ import string
 import unittest
 import itertools
 import traceback
-import sys
 
 import rubik.cube as cube
 from rubik.cube import Cube
 from rubik.maths import Point, Matrix
 from rubik.solve import Solver
+from rubik.optimize import *
+import rubik.optimize
 
 solved_cube_str = \
 """    UUU
@@ -647,6 +648,71 @@ class TestSolver(unittest.TestCase):
             self.assertTrue(c.is_solved(), msg="Failed to solve cube: " + orig)
         except Exception as e:
             self.fail(traceback.format_exc() + "original cube: " + orig)
+
+class TestOptimize(unittest.TestCase):
+
+    moves = (('R', 'Ri'), ('L', 'Li'), ('U', 'Ui'), ('D', 'Di'), ('F', 'Fi'), ('B', 'Bi'),
+             ('M', 'Mi'), ('E', 'Ei'), ('S', 'Si'), ('X', 'Xi'), ('Y', 'Yi'), ('Z', 'Zi'))
+
+    def test_optimize_repeat_three(self):
+        for cw, cc in self.moves:
+            self.assertEquals([cc], optimize_moves([cw, cw, cw]))
+            self.assertEquals([cw], optimize_moves([cc, cc, cc]))
+            self.assertEquals(['_', cw], optimize_moves(['_', cc, cc, cc]))
+            self.assertEquals(['_', cc], optimize_moves(['_', cw, cw, cw]))
+            self.assertEquals(['_', cw, '_'], optimize_moves(['_', cc, cc, cc, '_']))
+            self.assertEquals(['_', cc, '_'], optimize_moves(['_', cw, cw, cw, '_']))
+
+            self.assertEquals([cw, cw],
+                              optimize_moves([cc,cc,cc, cc,cc,cc]))
+            self.assertEquals([cw, cw, '_'],
+                              optimize_moves([cc,cc,cc, cc,cc,cc, '_']))
+            self.assertEquals([cw, cw, '_', '_'],
+                              optimize_moves([cc,cc,cc, cc,cc,cc, '_','_']))
+            self.assertEquals([cc],
+                              optimize_moves([cc,cc,cc, cc,cc,cc, cc,cc,cc]))
+
+    def test_optimize_do_undo(self):
+        for cw, cc in self.moves:
+            self.assertEquals([], optimize_moves([cc, cw]))
+            self.assertEquals([], optimize_moves([cw, cc]))
+
+            self.assertEquals([], optimize_moves([cw, cw, cc, cc]))
+            self.assertEquals([], optimize_moves([cw, cw, cw, cc, cc, cc]))
+            self.assertEquals([], optimize_moves([cw, cw, cw, cw, cc, cc, cc, cc]))
+
+            self.assertEquals(['1', '2'], optimize_moves(['1', cw, cw, cc, cc, '2']))
+            self.assertEquals(['1', '2', '3', '4'], optimize_moves(['1', '2', cw, cw, cc, cc, '3', '4']))
+
+    def test_full_cube_rotation_optimization(self):
+        for cw, cc in (('X', 'Xi'), ('Y', 'Yi'), ('Z', 'Zi')):
+            for moves in ([cc, cw], [cw, cc]):
+                rubik.optimize.apply_no_full_cube_rotation_optimization(moves)
+                self.assertEquals([], moves)
+
+        for cw, cc in (('Z', 'Zi'),):
+            moves = [cw, 'U', 'L', 'D', 'R','E', 'M', cc]
+            expected = ['L', 'D', 'R', 'U', 'Mi', 'E']
+            actual = list(moves)
+            rubik.optimize.apply_no_full_cube_rotation_optimization(actual)
+            self.assertEquals(expected, actual)
+
+            c, d = Cube(solved_cube_str), Cube(solved_cube_str)
+            c.sequence(" ".join(moves))
+            d.sequence(" ".join(actual))
+            self.assertEquals(str(c), str(d))
+
+            moves = [cw, cw, 'U', 'L', 'D', 'R','E', 'M', cc, cc]
+            expected = ['D', 'R', 'U', 'L', 'Ei', 'Mi']
+            actual = list(moves)
+            rubik.optimize.apply_no_full_cube_rotation_optimization(actual)
+            self.assertEquals(expected, actual)
+
+            c, d = Cube(solved_cube_str), Cube(solved_cube_str)
+            c.sequence(" ".join(moves))
+            d.sequence(" ".join(actual))
+            self.assertEquals(str(c), str(d))
+
 
 if __name__ == '__main__':
     unittest.main()

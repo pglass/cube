@@ -3,6 +3,7 @@ import time
 from cube import Cube
 import solve
 from solve import Solver
+from optimize import optimize_moves
 
 SOLVED_CUBE_STR = "OOOOOOOOOYYYWWWGGGBBBYYYWWWGGGBBBYYYWWWGGGBBBRRRRRRRRR"
 
@@ -43,6 +44,7 @@ def count_number_successful():
     failures = 0
 
     # moves_made = []
+    avg_opt_moves = 0
     avg_moves = 0
     avg_time = 0
     while True:
@@ -56,9 +58,11 @@ def count_number_successful():
             pass
 
         if C.is_solved():
+            opt_moves = optimize_moves(solver.moves)
             successes += 1
             avg_moves = (avg_moves * (successes - 1) + len(solver.moves)) / float(successes)
             avg_time = (avg_time * (successes - 1) + duration) / float(successes)
+            avg_opt_moves = (avg_opt_moves * (successes - 1) + len(opt_moves)) / float(successes)
             # moves_made.append(len(solver.moves))
         else:
             failures += 1
@@ -67,6 +71,7 @@ def count_number_successful():
         if (total == 1 or total % 1000 == 0) and C.is_solved():
             print "%s: %s successes (%.3f%% passing)" % (int(total), successes, 100 * successes / total),
             print "moves=%s avg_moves=%0.3f" % (len(solver.moves), avg_moves),
+            print "opt_moves=%s avg_opt_moves=%0.3f" % (len(opt_moves), avg_opt_moves),
             print "time=%0.3f avg_time=%0.3f" % (duration, avg_time)
 
 

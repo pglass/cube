@@ -39,4 +39,10 @@ To implement `Cube.X()` - a clockwise rotation of the *entire* cube around the p
 
 The solver implements the algorithm described [here](http://peter.stillhq.com/jasmine/rubikscubesolution.html) and [here](http://www.chessandpoker.com/rubiks-cube-solution.html). It is a layer-by-layer solution. First the front-face (the `z = 1` plane) is solved, then the middle layer (`z = 0`), and finally the back layer (`z = 0`). When the solver is done, `Solver.moves` is a list representing the solution sequence.
 
-My first complete implementation of the solver produced no failures and averaged 252.5 moves per solution sequence on 135000 randomly-generated cubes.
+My first correct-looking implementation of the solver average 252.5 moves per solution sequence on 135000 randomly-generated cubes (with no failures). Implementing a dumb optimizer reduced the average number of moves to 192.7 on 67000 randomly-generated cubes. The optimizer does the following:
+
+1. Eliminate full-cube rotations by "unrotating" the moves (Z U L D Zi becomes L D R)
+2. Eliminate moves followed by their inverse (R R Ri Ri is gone)
+3. Replace moves repeated three times with a single turn in the opposite direction (R R R becomes Ri)
+
+The solver is not particularly fast. On my machine (a 4.0 Ghz i7), it takes about 0.06 seconds per solve on CPython, which is roughly 16.7 solves/second. On PyPy, this is reduced to about 0.013 seconds per solve, or about 76 solves/second.
