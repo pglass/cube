@@ -1,6 +1,11 @@
 # Overview
 
-This a Python implementation of a Rubik's Cube solver.
+This a Python implementation of a (3x3) Rubik's Cube solver. It contains:
+
+- A simple implementation of the cube
+- A solver that follows a fixed algorithm
+- An unintelligent solution sequence optimizer
+- A decent set of test cases
  
 ## Implementation
 
@@ -37,7 +42,7 @@ To implement `Cube.X()` - a clockwise rotation of the *entire* cube around the p
 
 ### Solver
 
-The solver implements the algorithm described [here](http://peter.stillhq.com/jasmine/rubikscubesolution.html) and [here](http://www.chessandpoker.com/rubiks-cube-solution.html). It is a layer-by-layer solution. First the front-face (the `z = 1` plane) is solved, then the middle layer (`z = 0`), and finally the back layer (`z = 0`). When the solver is done, `Solver.moves` is a list representing the solution sequence.
+The solver implements the algorithm described [here](http://peter.stillhq.com/jasmine/rubikscubesolution.html) and [here](http://www.chessandpoker.com/rubiks-cube-solution.html). It is a layer-by-layer solution. First the front-face (the `z = 1` plane) is solved, then the middle layer (`z = 0`), and finally the back layer (`z = -1`). When the solver is done, `Solver.moves` is a list representing the solution sequence.
 
 My first correct-looking implementation of the solver average 252.5 moves per solution sequence on 135000 randomly-generated cubes (with no failures). Implementing a dumb optimizer reduced the average number of moves to 192.7 on 67000 randomly-generated cubes. The optimizer does the following:
 
