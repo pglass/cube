@@ -7,9 +7,9 @@ class Point(object):
         try:
             # convert from an iterable
             ii = iter(x)
-            self.x = ii.next()
-            self.y = ii.next()
-            self.z = ii.next()
+            self.x = next(ii)
+            self.y = next(ii)
+            self.z = next(ii)
         except TypeError:
             # not iterable
             self.x = x

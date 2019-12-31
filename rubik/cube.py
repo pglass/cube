@@ -1,7 +1,7 @@
 import string
 import textwrap
 
-from maths import Point, Matrix
+from .maths import Point, Matrix
 
 RIGHT = X_AXIS = Point(1, 0, 0)
 LEFT           = Point(-1, 0, 0)
@@ -93,9 +93,9 @@ class Piece(object):
             rot += matrix * rot
 
         if rot.count(0) != 1:
-            print "before:", before
-            print "self.pos:", self.pos
-            print "rot:", rot
+            print("before:", before)
+            print("self.pos:", self.pos)
+            print("rot:", rot)
         assert rot.count(0) == 1
 
         i, j = (i for i, x in enumerate(rot) if x != 0)
@@ -203,7 +203,7 @@ class Cube(object):
         :return: A list of Pieces in the given plane
         """
         assert plane.count(0) == 1
-        i = (i for i, x in enumerate(plane) if x == 0).next()
+        i = next((i for i, x in enumerate(plane) if x == 0))
         return [p for p in self.pieces if p.pos[i] == 0]
 
     def _rotate_face(self, face, matrix):
@@ -332,4 +332,4 @@ if __name__ == '__main__':
                 "    DLU\n"
                 "    ULF\n"
                 "    LFR")
-    print cube
+    print(cube)

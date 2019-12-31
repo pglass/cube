@@ -57,9 +57,9 @@ class TestPoint(unittest.TestCase):
 
     def test_point_neq(self):
         points = [Point(1, 2, 3), Point(1, 2, 4), Point(1, 3, 3), Point(2, 2, 3)]
-        for i in xrange(len(points)):
-            for j in xrange(i + 1, len(points)):
-                self.assertNotEquals(points[i], points[j])
+        for i in range(len(points)):
+            for j in range(i + 1, len(points)):
+                self.assertNotEqual(points[i], points[j])
                 self.assertTrue(points[i] != points[j])
                 self.assertFalse(points[i] == points[j])
 
@@ -106,10 +106,10 @@ class TestPoint(unittest.TestCase):
 
     def test_point_iter(self):
         ii = iter(self.p)
-        self.assertEqual(1, ii.next())
-        self.assertEqual(2, ii.next())
-        self.assertEqual(3, ii.next())
-        self.assertRaises(StopIteration, ii.next)
+        self.assertEqual(1, next(ii))
+        self.assertEqual(2, next(ii))
+        self.assertEqual(3, next(ii))
+        self.assertRaises(StopIteration, ii.__next__)
 
     def test_point_getitem(self):
         self.assertEqual(self.p[0], 1)
@@ -134,16 +134,16 @@ class TestMatrix(unittest.TestCase):
         self.p = Point(1, 2, 3)
 
     def test_matrix_from_items(self):
-        self.assertEqual(self.A.vals, range(1, 10))
+        self.assertEqual(self.A.vals, list(range(1, 10)))
 
     def test_matrix_from_list(self):
-        self.assertEqual(self.B.vals, range(9, 0, -1))
+        self.assertEqual(self.B.vals, list(range(9, 0, -1)))
 
     def test_matrix_from_nested_lists(self):
         self.assertEqual(self.C.vals, [3, 2, 1, 6, 5, 4, 9, 8, 7])
 
     def test_matrix_from_iterable(self):
-        self.assertEqual(self.D.vals, range(11, 20))
+        self.assertEqual(self.D.vals, list(range(11, 20)))
 
     def test_matrix_str(self):
         self.assertEqual(str(self.A), ("[1, 2, 3,\n"
@@ -157,7 +157,7 @@ class TestMatrix(unittest.TestCase):
 
     def test_matrix_eq(self):
         self.assertEqual(self.A, self.A)
-        self.assertEqual(self.A, Matrix(range(1, 10)))
+        self.assertEqual(self.A, Matrix(list(range(1, 10))))
 
     def test_matrix_add(self):
         self.assertEqual(self.A + self.D, Matrix(12, 14, 16, 18, 20, 22, 24, 26, 28))
@@ -656,62 +656,62 @@ class TestOptimize(unittest.TestCase):
 
     def test_optimize_repeat_three(self):
         for cw, cc in self.moves:
-            self.assertEquals([cc], optimize_moves([cw, cw, cw]))
-            self.assertEquals([cw], optimize_moves([cc, cc, cc]))
-            self.assertEquals(['_', cw], optimize_moves(['_', cc, cc, cc]))
-            self.assertEquals(['_', cc], optimize_moves(['_', cw, cw, cw]))
-            self.assertEquals(['_', cw, '_'], optimize_moves(['_', cc, cc, cc, '_']))
-            self.assertEquals(['_', cc, '_'], optimize_moves(['_', cw, cw, cw, '_']))
+            self.assertEqual([cc], optimize_moves([cw, cw, cw]))
+            self.assertEqual([cw], optimize_moves([cc, cc, cc]))
+            self.assertEqual(['_', cw], optimize_moves(['_', cc, cc, cc]))
+            self.assertEqual(['_', cc], optimize_moves(['_', cw, cw, cw]))
+            self.assertEqual(['_', cw, '_'], optimize_moves(['_', cc, cc, cc, '_']))
+            self.assertEqual(['_', cc, '_'], optimize_moves(['_', cw, cw, cw, '_']))
 
-            self.assertEquals([cw, cw],
+            self.assertEqual([cw, cw],
                               optimize_moves([cc,cc,cc, cc,cc,cc]))
-            self.assertEquals([cw, cw, '_'],
+            self.assertEqual([cw, cw, '_'],
                               optimize_moves([cc,cc,cc, cc,cc,cc, '_']))
-            self.assertEquals([cw, cw, '_', '_'],
+            self.assertEqual([cw, cw, '_', '_'],
                               optimize_moves([cc,cc,cc, cc,cc,cc, '_','_']))
-            self.assertEquals([cc],
+            self.assertEqual([cc],
                               optimize_moves([cc,cc,cc, cc,cc,cc, cc,cc,cc]))
 
     def test_optimize_do_undo(self):
         for cw, cc in self.moves:
-            self.assertEquals([], optimize_moves([cc, cw]))
-            self.assertEquals([], optimize_moves([cw, cc]))
+            self.assertEqual([], optimize_moves([cc, cw]))
+            self.assertEqual([], optimize_moves([cw, cc]))
 
-            self.assertEquals([], optimize_moves([cw, cw, cc, cc]))
-            self.assertEquals([], optimize_moves([cw, cw, cw, cc, cc, cc]))
-            self.assertEquals([], optimize_moves([cw, cw, cw, cw, cc, cc, cc, cc]))
+            self.assertEqual([], optimize_moves([cw, cw, cc, cc]))
+            self.assertEqual([], optimize_moves([cw, cw, cw, cc, cc, cc]))
+            self.assertEqual([], optimize_moves([cw, cw, cw, cw, cc, cc, cc, cc]))
 
-            self.assertEquals(['1', '2'], optimize_moves(['1', cw, cw, cc, cc, '2']))
-            self.assertEquals(['1', '2', '3', '4'], optimize_moves(['1', '2', cw, cw, cc, cc, '3', '4']))
+            self.assertEqual(['1', '2'], optimize_moves(['1', cw, cw, cc, cc, '2']))
+            self.assertEqual(['1', '2', '3', '4'], optimize_moves(['1', '2', cw, cw, cc, cc, '3', '4']))
 
     def test_full_cube_rotation_optimization(self):
         for cw, cc in (('X', 'Xi'), ('Y', 'Yi'), ('Z', 'Zi')):
             for moves in ([cc, cw], [cw, cc]):
                 rubik.optimize.apply_no_full_cube_rotation_optimization(moves)
-                self.assertEquals([], moves)
+                self.assertEqual([], moves)
 
         for cw, cc in (('Z', 'Zi'),):
             moves = [cw, 'U', 'L', 'D', 'R','E', 'M', cc]
             expected = ['L', 'D', 'R', 'U', 'Mi', 'E']
             actual = list(moves)
             rubik.optimize.apply_no_full_cube_rotation_optimization(actual)
-            self.assertEquals(expected, actual)
+            self.assertEqual(expected, actual)
 
             c, d = Cube(solved_cube_str), Cube(solved_cube_str)
             c.sequence(" ".join(moves))
             d.sequence(" ".join(actual))
-            self.assertEquals(str(c), str(d))
+            self.assertEqual(str(c), str(d))
 
             moves = [cw, cw, 'U', 'L', 'D', 'R','E', 'M', cc, cc]
             expected = ['D', 'R', 'U', 'L', 'Ei', 'Mi']
             actual = list(moves)
             rubik.optimize.apply_no_full_cube_rotation_optimization(actual)
-            self.assertEquals(expected, actual)
+            self.assertEqual(expected, actual)
 
             c, d = Cube(solved_cube_str), Cube(solved_cube_str)
             c.sequence(" ".join(moves))
             d.sequence(" ".join(actual))
-            self.assertEquals(str(c), str(d))
+            self.assertEqual(str(c), str(d))
 
 
 if __name__ == '__main__':

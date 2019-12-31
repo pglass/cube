@@ -1,4 +1,4 @@
-import cube
+from . import cube
 
 X_ROT_CW = {
     'U': 'F',
@@ -31,9 +31,9 @@ Z_ROT_CW = {
     'X': 'Y',
 }
 
-X_ROT_CC = {v: k for k, v in X_ROT_CW.iteritems()}
-Y_ROT_CC = {v: k for k, v in Y_ROT_CW.iteritems()}
-Z_ROT_CC = {v: k for k, v in Z_ROT_CW.iteritems()}
+X_ROT_CC = {v: k for k, v in X_ROT_CW.items()}
+Y_ROT_CC = {v: k for k, v in Y_ROT_CW.items()}
+Z_ROT_CC = {v: k for k, v in Z_ROT_CW.items()}
 
 def get_rot_table(rot):
     if rot == 'X': return X_ROT_CW
@@ -96,7 +96,7 @@ def apply_no_full_cube_rotation_optimization(moves):
             i += 1
             continue
 
-        for j in reversed(xrange(i + 1, len(moves))):
+        for j in reversed(range(i + 1, len(moves))):
             if moves[j] == _invert(moves[i]):
                 moves[i:j+1] = _unrotate(moves[i], moves[i+1:j])
                 changed = True
@@ -125,20 +125,20 @@ if __name__ == '__main__':
                   "U F R R Z Z Z Z R R F D Ui R R Di U F R R Z Z Z Z Z Ri S Ri Ri S S Ri "
                   "Fi Fi R Si Si Ri Ri Si R Fi Fi Zi Xi Xi")
     moves = test_seq_1.split()
-    print "%s moves:" % len(moves)
-    print " ".join(moves)
+    print("%s moves:" % len(moves))
+    print(" ".join(moves))
 
     opt = optimize_moves(moves)
-    print "%s moves:" % len(opt)
-    print " ".join(opt)
+    print("%s moves:" % len(opt))
+    print(" ".join(opt))
 
     orig = cube.Cube("OOOOOOOOOYYYWWWGGGBBBYYYWWWGGGBBBYYYWWWGGGBBBRRRRRRRRR")
     c, d = cube.Cube(orig), cube.Cube(orig)
 
     c.sequence(" ".join(moves))
     d.sequence(" ".join(opt))
-    print c, '\n'
-    print d
+    print(c, '\n')
+    print(d)
     assert c == d
 
 
