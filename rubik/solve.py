@@ -5,7 +5,8 @@ from .maths import Point
 
 DEBUG = False
 
-class Solver(object):
+
+class Solver:
 
     def __init__(self, c):
         self.cube = c
@@ -55,10 +56,9 @@ class Solver(object):
         self.move("Zi")
 
     def _cross_left_or_right(self, edge_piece, face_piece, face_color, move_1, move_2):
-
         # don't do anything if piece is in correct place
-        if edge_piece.pos == (face_piece.pos.x, face_piece.pos.y, 1) and \
-            edge_piece.colors[2] == self.cube.front_color():
+        if (edge_piece.pos == (face_piece.pos.x, face_piece.pos.y, 1)
+                and edge_piece.colors[2] == self.cube.front_color()):
             return
 
         # ensure piece is at z = -1
@@ -121,7 +121,6 @@ class Solver(object):
         self.move("Z")
 
     def place_frd_corner(self, corner_piece, right_piece, down_piece, front_color):
-
         # rotate to z = -1
         if corner_piece.pos.z == 1:
             pos = Point(corner_piece.pos)
@@ -179,7 +178,6 @@ class Solver(object):
         self.move("Z")
 
     def place_middle_layer_ld_edge(self, ld_piece, left_color, down_color):
-
         # move to z == -1
         if ld_piece.pos.z == 0:
             count = 0
@@ -368,7 +366,6 @@ class Solver(object):
         bu_edge = self.cube.find_piece(self.cube.front_color(), self.cube.up_color())
         bd_edge = self.cube.find_piece(self.cube.front_color(), self.cube.down_color())
 
-
         # States:
         #       1              2
         #      ---            ---
@@ -381,7 +378,6 @@ class Solver(object):
         #      ---            ---
         #      ---            ---
         #              (aB edge on any FRONT)
-
         def state1():
             return (bu_edge.colors[2] != self.cube.front_color() and
                     bd_edge.colors[2] != self.cube.front_color() and
@@ -511,10 +507,8 @@ if __name__ == '__main__':
     solver = Solver(c)
     solver.solve()
 
-    print("%s moves: " % len(solver.moves))
-    print(" ".join(solver.moves))
+    print(f"{len(solver.moves)} moves: {' '.join(solver.moves)}")
 
     check = cube.Cube(orig)
     check.sequence(" ".join(solver.moves))
     assert check.is_solved()
-

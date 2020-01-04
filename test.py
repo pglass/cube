@@ -49,11 +49,14 @@ class TestPoint(unittest.TestCase):
         self.assertEqual(self.r.count(2), 2)
         self.assertEqual(self.r.count(3), 1)
         self.assertEqual(self.r.count(5), 0)
+        self.assertEqual(Point(9, 9, 9).count(9), 3)
 
     def test_point_eq(self):
         pp = Point(self.p.x, self.p.y, self.p.z)
         self.assertEqual(self.p, pp)
         self.assertTrue(self.p == pp)
+        self.assertTrue(self.p == (1, 2, 3))
+        self.assertTrue(self.p == [1, 2, 3])
 
     def test_point_neq(self):
         points = [Point(1, 2, 3), Point(1, 2, 4), Point(1, 3, 3), Point(2, 2, 3)]

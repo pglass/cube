@@ -39,6 +39,7 @@ ROT_YZ_CC = Matrix(1, 0, 0,
                    0, 0, -1,
                    0, 1, 0)
 
+
 def get_rot_from_face(face):
     """
     :param face: One of FRONT, BACK, LEFT, RIGHT, UP, DOWN
@@ -52,7 +53,8 @@ def get_rot_from_face(face):
     elif face == BACK:  return "B", "Bi"
     return None
 
-class Piece(object):
+
+class Piece:
 
     def __init__(self, pos, colors):
         """
@@ -67,7 +69,8 @@ class Piece(object):
         self._set_piece_type()
 
     def __str__(self):
-        return "(%s %s, %s)" % (self.type, "".join(c for c in self.colors if c is not None), self.pos)
+        colors = "".join(c for c in self.colors if c is not None)
+        return f"({self.type}, {colors}, {self.pos})"
 
     def _set_piece_type(self):
         if self.colors.count(None) == 2:
@@ -77,7 +80,7 @@ class Piece(object):
         elif self.colors.count(None) == 0:
             self.type = CORNER
         else:
-            raise ValueError("Must have 1, 2, or 3 colors - given colors=%s" % self.colors)
+            raise ValueError(f"Must have 1, 2, or 3 colors - given colors={self.colors}")
 
     def rotate(self, matrix):
         """Apply the given rotation matrix to this piece."""
@@ -92,30 +95,31 @@ class Piece(object):
         if rot.count(0) == 2:
             rot += matrix * rot
 
-        if rot.count(0) != 1:
-            print("before:", before)
-            print("self.pos:", self.pos)
-            print("rot:", rot)
-        assert rot.count(0) == 1
+        assert rot.count(0) == 1, (
+            f"There is a bug in the Piece.rotate() method!"
+            f"\nbefore: {before}"
+            f"\nself.pos: {self.pos}"
+            f"\nrot: {rot}"
+        )
 
         i, j = (i for i, x in enumerate(rot) if x != 0)
         self.colors[i], self.colors[j] = self.colors[j], self.colors[i]
 
 
-class Cube(object):
+class Cube:
     """Stores Pieces which are addressed through an x-y-z coordinate system:
         -x is the LEFT direction, +x is the RIGHT direction
         -y is the DOWN direction, +y is the UP direction
         -z is the BACK direction, +z is the FRONT direction
     """
 
-    def __from_cube__(self, c):
+    def _from_cube(self, c):
         self.faces = [Piece(pos=Point(p.pos), colors=p.colors) for p in c.faces]
         self.edges = [Piece(pos=Point(p.pos), colors=p.colors) for p in c.edges]
         self.corners = [Piece(pos=Point(p.pos), colors=p.colors) for p in c.corners]
         self.pieces = self.faces + self.edges + self.corners
 
-    def __assert_data__(self):
+    def _assert_data(self):
         assert len(self.pieces) == 26
         assert all(p.type == FACE for p in self.faces)
         assert all(p.type == EDGE for p in self.edges)
@@ -137,7 +141,7 @@ class Cube(object):
         Each 'sticker' must be a single character.
         """
         if isinstance(cube_str, Cube):
-            self.__from_cube__(cube_str)
+            self._from_cube(cube_str)
             return
 
         cube_str = "".join(x for x in cube_str if x not in string.whitespace)
@@ -176,7 +180,7 @@ class Cube(object):
 
         self.pieces = self.faces + self.edges + self.corners
 
-        self.__assert_data__()
+        self._assert_data()
 
     def is_solved(self):
         def check(colors):
@@ -191,7 +195,7 @@ class Cube(object):
 
     def _face(self, axis):
         """
-        :param axis: One of LEFT, RIGHT, UP, DOWN, FRONT, BACK 
+        :param axis: One of LEFT, RIGHT, UP, DOWN, FRONT, BACK
         :return: A list of Pieces on the given face
         """
         assert axis.count(0) == 2
@@ -217,29 +221,29 @@ class Cube(object):
             piece.rotate(matrix)
 
     # Rubik's Cube Notation: http://ruwix.com/the-rubiks-cube/notation/
-    def L(self): self._rotate_face(LEFT, ROT_YZ_CC)
+    def L(self):  self._rotate_face(LEFT, ROT_YZ_CC)
     def Li(self): self._rotate_face(LEFT, ROT_YZ_CW)
-    def R(self): self._rotate_face(RIGHT, ROT_YZ_CW)
+    def R(self):  self._rotate_face(RIGHT, ROT_YZ_CW)
     def Ri(self): self._rotate_face(RIGHT, ROT_YZ_CC)
-    def U(self): self._rotate_face(UP, ROT_XZ_CW)
+    def U(self):  self._rotate_face(UP, ROT_XZ_CW)
     def Ui(self): self._rotate_face(UP, ROT_XZ_CC)
-    def D(self): self._rotate_face(DOWN, ROT_XZ_CC)
+    def D(self):  self._rotate_face(DOWN, ROT_XZ_CC)
     def Di(self): self._rotate_face(DOWN, ROT_XZ_CW)
-    def F(self): self._rotate_face(FRONT, ROT_XY_CW)
+    def F(self):  self._rotate_face(FRONT, ROT_XY_CW)
     def Fi(self): self._rotate_face(FRONT, ROT_XY_CC)
-    def B(self): self._rotate_face(BACK, ROT_XY_CC)
+    def B(self):  self._rotate_face(BACK, ROT_XY_CC)
     def Bi(self): self._rotate_face(BACK, ROT_XY_CW)
-    def M(self): self._rotate_slice(Y_AXIS + Z_AXIS, ROT_YZ_CC)
+    def M(self):  self._rotate_slice(Y_AXIS + Z_AXIS, ROT_YZ_CC)
     def Mi(self): self._rotate_slice(Y_AXIS + Z_AXIS, ROT_YZ_CW)
-    def E(self): self._rotate_slice(X_AXIS + Z_AXIS, ROT_XZ_CC)
+    def E(self):  self._rotate_slice(X_AXIS + Z_AXIS, ROT_XZ_CC)
     def Ei(self): self._rotate_slice(X_AXIS + Z_AXIS, ROT_XZ_CW)
-    def S(self): self._rotate_slice(X_AXIS + Y_AXIS, ROT_XY_CW)
+    def S(self):  self._rotate_slice(X_AXIS + Y_AXIS, ROT_XY_CW)
     def Si(self): self._rotate_slice(X_AXIS + Y_AXIS, ROT_XY_CC)
-    def X(self): self._rotate_pieces(self.pieces, ROT_YZ_CW)
+    def X(self):  self._rotate_pieces(self.pieces, ROT_YZ_CW)
     def Xi(self): self._rotate_pieces(self.pieces, ROT_YZ_CC)
-    def Y(self): self._rotate_pieces(self.pieces, ROT_XZ_CW)
+    def Y(self):  self._rotate_pieces(self.pieces, ROT_XZ_CW)
     def Yi(self): self._rotate_pieces(self.pieces, ROT_XZ_CC)
-    def Z(self): self._rotate_pieces(self.pieces, ROT_XY_CW)
+    def Z(self):  self._rotate_pieces(self.pieces, ROT_XY_CW)
     def Zi(self): self._rotate_pieces(self.pieces, ROT_XY_CC)
 
     def sequence(self, move_str):
@@ -273,7 +277,7 @@ class Cube(object):
         return self.get_piece(*args)
 
     def __eq__(self, other):
-        return isinstance(other, Cube) and str(self) == str(other)
+        return isinstance(other, Cube) and self._color_list() == other._color_list()
 
     def __ne__(self, other):
         return not (self == other)
@@ -282,9 +286,7 @@ class Cube(object):
         """
         :return: A set containing the colors of all stickers on the cube
         """
-        result = set(c for piece in self.pieces for c in piece.colors)
-        result.remove(None)
-        return result
+        return set(c for piece in self.pieces for c in piece.colors if c is not None)
 
     def left_color(self): return self[LEFT].colors[0]
     def right_color(self): return self[RIGHT].colors[0]
@@ -309,17 +311,17 @@ class Cube(object):
         return "".join(x for x in str(self) if x not in string.whitespace)
 
     def __str__(self):
-        template = ("    {0}{1}{2}\n"
-                    "    {3}{4}{5}\n"
-                    "    {6}{7}{8}\n"
-                    "{9}{10}{11} {12}{13}{14} {15}{16}{17} {18}{19}{20}\n"
-                    "{21}{22}{23} {24}{25}{26} {27}{28}{29} {30}{31}{32}\n"
-                    "{33}{34}{35} {36}{37}{38} {39}{40}{41} {42}{43}{44}\n"
-                    "    {45}{46}{47}\n"
-                    "    {48}{49}{50}\n"
-                    "    {51}{52}{53}")
+        template = ("    {}{}{}\n"
+                    "    {}{}{}\n"
+                    "    {}{}{}\n"
+                    "{}{}{} {}{}{} {}{}{} {}{}{}\n"
+                    "{}{}{} {}{}{} {}{}{} {}{}{}\n"
+                    "{}{}{} {}{}{} {}{}{} {}{}{}\n"
+                    "    {}{}{}\n"
+                    "    {}{}{}\n"
+                    "    {}{}{}")
 
-        return "    " + textwrap.dedent(template).format(*self._color_list()).strip()
+        return "    " + template.format(*self._color_list()).strip()
 
 
 if __name__ == '__main__':

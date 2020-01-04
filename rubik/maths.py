@@ -1,5 +1,5 @@
 
-class Point(object):
+class Point:
     """A 3D point/vector"""
 
     def __init__(self, x, y=None, z=None):
@@ -16,7 +16,7 @@ class Point(object):
             self.y = y
             self.z = z
         if any(val is None for val in self):
-            raise ValueError("Point does not allow None values: %s" % self)
+            raise ValueError(f"Point does not allow None values: {self}")
 
     def __str__(self):
         return str(tuple(self))
@@ -43,15 +43,21 @@ class Point(object):
                      self.x * other.y - self.y * other.x)
 
     def __getitem__(self, item):
-        return tuple(self)[item]
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
+        elif item == 2:
+            return self.z
+        raise IndexError("Point index out of range")
 
     def __iter__(self):
         yield self.x
         yield self.y
         yield self.z
 
-    def count(self, *args):
-        return tuple(self).count(*args)
+    def count(self, val):
+        return int(self.x == val) + int(self.y == val) + int(self.z == val)
 
     def __iadd__(self, other):
         self.x += other.x
@@ -66,13 +72,16 @@ class Point(object):
         return self
 
     def __eq__(self, other):
-        return tuple(self) == tuple(other)
+        if isinstance(other, (tuple, list)):
+            return self.x == other[0] and self.y == other[1] and self.z == other[2]
+        return (isinstance(other, self.__class__) and self.x == other.x
+                and self.y == other.y and self.z == other.z)
 
     def __ne__(self, other):
         return not (self == other)
 
 
-class Matrix(object):
+class Matrix:
     """A 3x3 matrix"""
 
     def __init__(self, *args):
@@ -92,17 +101,17 @@ class Matrix(object):
             self.__init__(*args[0])
 
         if len(self.vals) != 9:
-            raise ValueError("Matrix requires 9 items, got %s" % args)
+            raise ValueError(f"Matrix requires 9 items, got {args}")
 
     def __str__(self):
-        return "[{0}, {1}, {2},\n" \
-               " {3}, {4}, {5},\n" \
-               " {6}, {7}, {8}]".format(*self.vals)
+        return ("[{}, {}, {},\n"
+                " {}, {}, {},\n"
+                " {}, {}, {}]".format(*self.vals))
 
     def __repr__(self):
-        return "Matrix({0}, {1}, {2},\n" \
-               "       {3}, {4}, {5},\n" \
-               "       {6}, {7}, {8})".format(*self.vals)
+        return ("Matrix({}, {}, {},\n"
+                "       {}, {}, {},\n"
+                "       {}, {}, {})".format(*self.vals))
 
     def __eq__(self, other):
         return self.vals == other.vals
@@ -137,9 +146,3 @@ class Matrix(object):
         yield self.vals[0:9:3]
         yield self.vals[1:9:3]
         yield self.vals[2:9:3]
-
-
-
-
-
-
