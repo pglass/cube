@@ -1,22 +1,23 @@
 import random
 import time
-from rubik.cube import Cube
 from rubik import solve
+from rubik.cube import Cube
 from rubik.solve import Solver
 from rubik.optimize import optimize_moves
 
 SOLVED_CUBE_STR = "OOOOOOOOOYYYWWWGGGBBBYYYWWWGGGBBBYYYWWWGGGBBBRRRRRRRRR"
-
 MOVES = ["L", "R", "U", "D", "F", "B", "M", "E", "S"]
+
 
 def random_cube():
     """
     :return: A new scrambled Cube
     """
-    scramble_moves = " ".join(random.choice(MOVES) for _ in range(200))
+    scramble_moves = " ".join(random.choices(MOVES, k=200))
     a = Cube(SOLVED_CUBE_STR)
     a.sequence(scramble_moves)
     return a
+
 
 def run():
     successes = 0
@@ -28,12 +29,10 @@ def run():
     while True:
         C = random_cube()
         solver = Solver(C)
-        try:
-            start = time.time()
-            solver.solve()
-            duration = time.time() - start
-        except Exception as e:
-            pass
+
+        start = time.time()
+        solver.solve()
+        duration = time.time() - start
 
         if C.is_solved():
             opt_moves = optimize_moves(solver.moves)
@@ -43,7 +42,7 @@ def run():
             avg_opt_moves = (avg_opt_moves * (successes - 1) + len(opt_moves)) / float(successes)
         else:
             failures += 1
-            print("Failed (%s): %s" % (successes + failures, C.flat_str()))
+            print(f"Failed ({successes + failures}): {C.flat_str()}")
 
         total = successes + failures
         if total == 1 or total % 100 == 0:
@@ -51,6 +50,7 @@ def run():
             print(f"{total}: {successes} successes ({pass_percentage:0.3f}% passing)"
                   f" avg_moves={avg_moves:0.3f} avg_opt_moves={avg_opt_moves:0.3f}"
                   f" avg_time={avg_time:0.3f}s")
+
 
 if __name__ == '__main__':
     solve.DEBUG = False
