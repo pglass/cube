@@ -1,3 +1,6 @@
+![PyPI](https://img.shields.io/pypi/v/rubik-cube)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/rubik-cube)
+
 # Overview
 
 This is a Python 3 implementation of a (3x3) Rubik's Cube solver.
