@@ -1,7 +1,7 @@
 import sys
 import time
-from . import cube
-from .maths import Point
+from rubik import cube
+from rubik.maths import Point
 
 DEBUG = False
 

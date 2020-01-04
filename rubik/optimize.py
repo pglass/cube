@@ -1,4 +1,4 @@
-from . import cube
+from rubik import cube
 
 X_ROT_CW = {
     'U': 'F',

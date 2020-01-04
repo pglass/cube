@@ -1,7 +1,7 @@
 import string
 import textwrap
 
-from .maths import Point, Matrix
+from rubik.maths import Point, Matrix
 
 RIGHT = X_AXIS = Point(1, 0, 0)
 LEFT           = Point(-1, 0, 0)
