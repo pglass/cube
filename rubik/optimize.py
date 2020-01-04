@@ -1,4 +1,4 @@
-import cube
+from rubik import cube
 
 X_ROT_CW = {
     'U': 'F',
@@ -30,10 +30,10 @@ Z_ROT_CW = {
     'Y': 'Xi',
     'X': 'Y',
 }
+X_ROT_CC = {v: k for k, v in X_ROT_CW.items()}
+Y_ROT_CC = {v: k for k, v in Y_ROT_CW.items()}
+Z_ROT_CC = {v: k for k, v in Z_ROT_CW.items()}
 
-X_ROT_CC = {v: k for k, v in X_ROT_CW.iteritems()}
-Y_ROT_CC = {v: k for k, v in Y_ROT_CW.iteritems()}
-Z_ROT_CC = {v: k for k, v in Z_ROT_CW.iteritems()}
 
 def get_rot_table(rot):
     if rot == 'X': return X_ROT_CW
@@ -42,6 +42,7 @@ def get_rot_table(rot):
     elif rot == 'Yi': return Y_ROT_CC
     elif rot == 'Z': return Z_ROT_CW
     elif rot == 'Zi': return Z_ROT_CC
+
 
 def _invert(move):
     if move.endswith('i'):
@@ -62,6 +63,7 @@ def apply_repeat_three_optimization(moves):
     if changed:
         apply_repeat_three_optimization(moves)
 
+
 def apply_do_undo_optimization(moves):
     """ R Ri --> <nothing>, R R Ri Ri --> <nothing> """
     changed = False
@@ -75,6 +77,7 @@ def apply_do_undo_optimization(moves):
     if changed:
         apply_do_undo_optimization(moves)
 
+
 def _unrotate(rot, moves):
     rot_table = get_rot_table(rot)
     result = []
@@ -87,6 +90,7 @@ def _unrotate(rot, moves):
             result.append(move)
     return result
 
+
 def apply_no_full_cube_rotation_optimization(moves):
     rots = {'X', 'Y', 'Z', 'Xi', 'Yi', 'Zi'}
     changed = False
@@ -96,7 +100,7 @@ def apply_no_full_cube_rotation_optimization(moves):
             i += 1
             continue
 
-        for j in reversed(xrange(i + 1, len(moves))):
+        for j in reversed(range(i + 1, len(moves))):
             if moves[j] == _invert(moves[i]):
                 moves[i:j+1] = _unrotate(moves[i], moves[i+1:j])
                 changed = True
@@ -105,12 +109,14 @@ def apply_no_full_cube_rotation_optimization(moves):
     if changed:
         apply_no_full_cube_rotation_optimization(moves)
 
+
 def optimize_moves(moves):
     result = list(moves)
     apply_no_full_cube_rotation_optimization(result)
     apply_repeat_three_optimization(result)
     apply_do_undo_optimization(result)
     return result
+
 
 if __name__ == '__main__':
     test_seq_1 = ("Li Li E L Ei Li B Ei R E Ri Z E L Ei Li Zi U U Ui Ui Ui B U B B B Bi "
@@ -125,20 +131,16 @@ if __name__ == '__main__':
                   "U F R R Z Z Z Z R R F D Ui R R Di U F R R Z Z Z Z Z Ri S Ri Ri S S Ri "
                   "Fi Fi R Si Si Ri Ri Si R Fi Fi Zi Xi Xi")
     moves = test_seq_1.split()
-    print "%s moves:" % len(moves)
-    print " ".join(moves)
+    print("{len(moves)} moves: {' '.join(moves)}")
 
     opt = optimize_moves(moves)
-    print "%s moves:" % len(opt)
-    print " ".join(opt)
+    print("{len(opt)} moves: {' '.join(opt)}")
 
     orig = cube.Cube("OOOOOOOOOYYYWWWGGGBBBYYYWWWGGGBBBYYYWWWGGGBBBRRRRRRRRR")
     c, d = cube.Cube(orig), cube.Cube(orig)
 
     c.sequence(" ".join(moves))
     d.sequence(" ".join(opt))
-    print c, '\n'
-    print d
+    print(c, '\n')
+    print(d)
     assert c == d
-
-

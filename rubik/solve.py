@@ -1,11 +1,12 @@
 import sys
 import time
-import cube
-from maths import Point
+from rubik import cube
+from rubik.maths import Point
 
 DEBUG = False
 
-class Solver(object):
+
+class Solver:
 
     def __init__(self, c):
         self.cube = c
@@ -18,28 +19,28 @@ class Solver(object):
         self.down_piece  = self.cube.find_piece(self.cube.down_color())
 
     def solve(self):
-        if DEBUG: print self.cube
+        if DEBUG: print(self.cube)
         self.cross()
-        if DEBUG: print 'Cross:\n', self.cube
+        if DEBUG: print('Cross:\n', self.cube)
         self.cross_corners()
-        if DEBUG: print 'Corners:\n', self.cube
+        if DEBUG: print('Corners:\n', self.cube)
         self.second_layer()
-        if DEBUG: print 'Second layer:\n', self.cube
+        if DEBUG: print('Second layer:\n', self.cube)
         self.back_face_edges()
-        if DEBUG: print 'Last layer edges\n', self.cube
+        if DEBUG: print('Last layer edges\n', self.cube)
         self.last_layer_corners_position()
-        if DEBUG: print 'Last layer corners -- position\n', self.cube
+        if DEBUG: print('Last layer corners -- position\n', self.cube)
         self.last_layer_corners_orientation()
-        if DEBUG: print 'Last layer corners -- orientation\n', self.cube
+        if DEBUG: print('Last layer corners -- orientation\n', self.cube)
         self.last_layer_edges()
-        if DEBUG: print 'Solved\n', self.cube
+        if DEBUG: print('Solved\n', self.cube)
 
     def move(self, move_str):
         self.moves.extend(move_str.split())
         self.cube.sequence(move_str)
 
     def cross(self):
-        if DEBUG: print "cross"
+        if DEBUG: print("cross")
         # place the UP-LEFT piece
         fl_piece = self.cube.find_piece(self.cube.front_color(), self.cube.left_color())
         fr_piece = self.cube.find_piece(self.cube.front_color(), self.cube.right_color())
@@ -55,10 +56,9 @@ class Solver(object):
         self.move("Zi")
 
     def _cross_left_or_right(self, edge_piece, face_piece, face_color, move_1, move_2):
-
         # don't do anything if piece is in correct place
-        if edge_piece.pos == (face_piece.pos.x, face_piece.pos.y, 1) and \
-            edge_piece.colors[2] == self.cube.front_color():
+        if (edge_piece.pos == (face_piece.pos.x, face_piece.pos.y, 1)
+                and edge_piece.colors[2] == self.cube.front_color()):
             return
 
         # ensure piece is at z = -1
@@ -105,7 +105,7 @@ class Solver(object):
             self.move(move_2)
 
     def cross_corners(self):
-        if DEBUG: print "cross_corners"
+        if DEBUG: print("cross_corners")
         fld_piece = self.cube.find_piece(self.cube.front_color(), self.cube.left_color(), self.cube.down_color())
         flu_piece = self.cube.find_piece(self.cube.front_color(), self.cube.left_color(), self.cube.up_color())
         frd_piece = self.cube.find_piece(self.cube.front_color(), self.cube.right_color(), self.cube.down_color())
@@ -121,7 +121,6 @@ class Solver(object):
         self.move("Z")
 
     def place_frd_corner(self, corner_piece, right_piece, down_piece, front_color):
-
         # rotate to z = -1
         if corner_piece.pos.z == 1:
             pos = Point(corner_piece.pos)
@@ -139,7 +138,7 @@ class Solver(object):
                 # go the other direction because I don't know which is which.
                 # we need to do only one flip (net) or we'll move other
                 # correctly-placed corners out of place.
-                for _ in xrange(count):
+                for _ in range(count):
                     self.move(cc)
 
                 count = 0
@@ -148,7 +147,7 @@ class Solver(object):
                     count += 1
                 undo_move = cw
             self.move("B")
-            for _ in xrange(count):
+            for _ in range(count):
                 self.move(undo_move)
 
         # rotate piece to be directly below its destination
@@ -179,7 +178,6 @@ class Solver(object):
         self.move("Z")
 
     def place_middle_layer_ld_edge(self, ld_piece, left_color, down_color):
-
         # move to z == -1
         if ld_piece.pos.z == 0:
             count = 0
@@ -188,7 +186,7 @@ class Solver(object):
                 count += 1
 
             self.move("B L Bi Li Bi Di B D")
-            for _ in xrange(count):
+            for _ in range(count):
                 self.move("Zi")
 
         assert ld_piece.pos.z == -1
@@ -368,7 +366,6 @@ class Solver(object):
         bu_edge = self.cube.find_piece(self.cube.front_color(), self.cube.up_color())
         bd_edge = self.cube.find_piece(self.cube.front_color(), self.cube.down_color())
 
-
         # States:
         #       1              2
         #      ---            ---
@@ -381,7 +378,6 @@ class Solver(object):
         #      ---            ---
         #      ---            ---
         #              (aB edge on any FRONT)
-
         def state1():
             return (bu_edge.colors[2] != self.cube.front_color() and
                     bd_edge.colors[2] != self.cube.front_color() and
@@ -425,7 +421,7 @@ class Solver(object):
 
         count = 0
         while not self.cube.is_solved():
-            for _ in xrange(4):
+            for _ in range(4):
                 if fish_pattern():
                     self.move(fish_move)
                     if self.cube.is_solved():
@@ -447,7 +443,7 @@ class Solver(object):
 
 
     def _handle_last_layer_state1(self, br_edge, bl_edge, bu_edge, bd_edge, cycle_move, h_move):
-        if DEBUG: print "_handle_last_layer_state1"
+        if DEBUG: print("_handle_last_layer_state1")
         def check_edge_lr():
             return self.cube[cube.LEFT + cube.FRONT].colors[2] == self.cube.left_color()
 
@@ -460,12 +456,12 @@ class Solver(object):
 
         self.move(h_move)
 
-        for _ in xrange(count):
+        for _ in range(count):
             self.move("Fi")
 
 
     def _handle_last_layer_state2(self, br_edge, bl_edge, bu_edge, bd_edge, cycle_move):
-        if DEBUG: print "_handle_last_layer_state2"
+        if DEBUG: print("_handle_last_layer_state2")
         def correct_edge():
             piece = self.cube[cube.LEFT + cube.FRONT]
             if piece.colors[2] == self.cube.front_color() and piece.colors[0] == self.cube.left_color():
@@ -506,15 +502,13 @@ class Solver(object):
 if __name__ == '__main__':
     DEBUG = True
     c = cube.Cube("DLURRDFFUBBLDDRBRBLDLRBFRUULFBDDUFBRBBRFUDFLUDLUULFLFR")
-    print "Solving:\n", c
+    print("Solving:\n", c)
     orig = cube.Cube(c)
     solver = Solver(c)
     solver.solve()
 
-    print "%s moves: " % len(solver.moves)
-    print " ".join(solver.moves)
+    print(f"{len(solver.moves)} moves: {' '.join(solver.moves)}")
 
     check = cube.Cube(orig)
     check.sequence(" ".join(solver.moves))
     assert check.is_solved()
-
