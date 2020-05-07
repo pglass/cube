@@ -123,3 +123,5 @@ The solver is not particularly fast. On my machine (a 4.0 Ghz i7), it takes
 about 0.06 seconds per solve on CPython, which is roughly 16.7 solves/second.
 On PyPy, this is reduced to about 0.013 seconds per solve, or about 76
 solves/second.
+
+[![Run on Repl.it](https://repl.it/badge/github/pglass/cube)](https://repl.it/github/pglass/cube)
