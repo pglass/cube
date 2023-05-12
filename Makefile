@@ -1,11 +1,12 @@
 .PHONY: test dist bump test-release release clean-dist clean
 
+VENV_EXE=python3 -m virtualenv
 VENV=.venv
 VENV_ACTIVATE=. $(VENV)/bin/activate
 BUMPTYPE=patch
 
 $(VENV):
-	virtualenv $(VENV)
+	$(VENV_EXE) $(VENV)
 	$(VENV_ACTIVATE); pip install tox bumpversion twine wheel 'readme_renderer[md]'
 
 test: $(VENV)

@@ -18,6 +18,8 @@ class Solver:
         self.up_piece    = self.cube.find_piece(self.cube.up_color())
         self.down_piece  = self.cube.find_piece(self.cube.down_color())
 
+        self.inifinite_loop_max_iterations = 12
+
     def solve(self):
         if DEBUG: print(self.cube)
         self.cross()
@@ -91,7 +93,7 @@ class Solver:
         while (edge_piece.pos.x, edge_piece.pos.y) != (face_piece.pos.x, face_piece.pos.y):
             self.move("B")
             count += 1
-            if count == 10:
+            if count >= self.inifinite_loop_max_iterations:
                 raise Exception("Stuck in loop - unsolvable cube?\n" + str(self.cube))
 
         # if we moved a correctly-placed piece, restore it
@@ -241,7 +243,7 @@ class Solver:
             else:
                 self.move("F")
             count += 1
-            if count == 10:
+            if count >= self.inifinite_loop_max_iterations:
                 raise Exception("Stuck in loop - unsolvable cube\n" + str(self.cube))
 
         self.move("Xi Xi")
@@ -340,6 +342,7 @@ class Solver:
         move_1 = "Ri Fi R Fi Ri F F R F F "
         move_2 = "R F Ri F R F F Ri F F "
 
+        count = 0
         while not state8():
             if state1(): self.move(move_1)
             elif state2(): self.move(move_2)
@@ -350,6 +353,10 @@ class Solver:
             elif state7(): self.move(move_1 + "F F " + move_1)
             else:
                 self.move("F")
+
+            count += 1
+            if count >= self.inifinite_loop_max_iterations:
+                raise Exception("Stuck in loop - unsolvable cube:\n" + str(self.cube))
 
         # rotate corners into correct locations (cube is inverted, so swap up and down colors)
         bru_corner = self.cube.find_piece(self.cube.front_color(), self.cube.right_color(), self.cube.up_color())
@@ -436,7 +443,7 @@ class Solver:
             else:
                 self.move(cycle_move)
             count += 1
-            if count == 10:
+            if count >= self.inifinite_loop_max_iterations:
                 raise Exception("Stuck in loop - unsolvable cube:\n" + str(self.cube))
 
         self.move("Xi Xi")
@@ -489,7 +496,7 @@ class Solver:
             if count % 3 == 0:
                 self.move("Z")
 
-            if count == 12:
+            if count >= self.inifinite_loop_max_iterations:
                 raise Exception("Stuck in loop - unsolvable cube:\n" + str(self.cube))
 
         while edge.pos != Point(-1, 0, 1):
