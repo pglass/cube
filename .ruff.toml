@@ -1,0 +1,7 @@
+line-length = 120
+
+ignore = [
+    # Multiple statements on one line.
+    "E701",
+
+]

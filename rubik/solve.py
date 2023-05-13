@@ -1,5 +1,3 @@
-import sys
-import time
 from rubik import cube
 from rubik.maths import Point
 
@@ -486,7 +484,7 @@ class Solver:
         count = 0
         while True:
             edge = correct_edge()
-            if edge == None:
+            if edge is None:
                 self.move(cycle_move)
             else:
                 break

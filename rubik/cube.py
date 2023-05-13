@@ -1,5 +1,4 @@
 import string
-import textwrap
 
 from rubik.maths import Point, Matrix
 
