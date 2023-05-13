@@ -7,7 +7,7 @@ import rubik.cube as cube
 from rubik.cube import Cube
 from rubik.maths import Point, Matrix
 from rubik.solve import Solver
-from rubik.optimize import *
+from rubik.optimize import optimize_moves
 import rubik.optimize
 
 solved_cube_str = \
@@ -657,7 +657,7 @@ class TestSolver(unittest.TestCase):
         try:
             solver.solve()
             self.assertTrue(c.is_solved(), msg="Failed to solve cube: " + orig)
-        except Exception as e:
+        except Exception:
             self.fail(traceback.format_exc() + "original cube: " + orig)
 
     def test_unsolvable_cube(self):

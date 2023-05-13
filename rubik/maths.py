@@ -95,7 +95,7 @@ class Matrix:
         elif len(args) == 3:
             try:
                 self.vals = [x for y in args for x in y]
-            except:
+            except Exception:
                 self.vals = []
         else:
             self.__init__(*args[0])

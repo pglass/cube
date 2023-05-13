@@ -1,3 +1,5 @@
+SHELL := bash
+
 .PHONY: test dist bump test-release release clean-dist clean
 
 VENV_EXE=python3 -m virtualenv
@@ -7,9 +9,15 @@ BUMPTYPE=patch
 
 $(VENV):
 	$(VENV_EXE) $(VENV)
-	$(VENV_ACTIVATE); pip install tox bumpversion twine wheel 'readme_renderer[md]'
+	$(VENV_ACTIVATE); pip install tox ruff bumpversion twine wheel 'readme_renderer[md]'
+
+lint: $(VENV)
+	$(VENV_ACTIVATE); ruff .
 
 test: $(VENV)
+	$(VENV_ACTIVATE); python tests/test.py
+
+test-all: $(VENV)
 	$(VENV_ACTIVATE); tox
 
 dist: clean-dist $(VENV)
