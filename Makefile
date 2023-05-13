@@ -9,7 +9,7 @@ BUMPTYPE=patch
 
 $(VENV):
 	$(VENV_EXE) $(VENV)
-	$(VENV_ACTIVATE); pip install tox ruff bumpversion twine wheel 'readme_renderer[md]'
+	$(VENV_ACTIVATE); pip install tox ruff bump2version twine wheel 'readme_renderer[md]'
 
 lint: $(VENV)
 	$(VENV_ACTIVATE); ruff .
@@ -27,7 +27,7 @@ dist: clean-dist $(VENV)
 	$(VENV_ACTIVATE); twine check dist/*
 
 bump: $(VENV)
-	$(VENV_ACTIVATE); bumpversion $(BUMPTYPE)
+	$(VENV_ACTIVATE); bump2version $(BUMPTYPE)
 	git show -q
 	@echo
 	@echo "SUCCESS: Version was bumped and committed"

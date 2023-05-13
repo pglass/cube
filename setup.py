@@ -4,7 +4,7 @@ long_description = open("README.md").read()
 
 setup_params = dict(
     name="rubik-cube",
-    version="0.0.2",
+    version="0.0.1",
     license="MIT",
     author="Paul Glass",
     author_email="pnglass@gmail.com",
