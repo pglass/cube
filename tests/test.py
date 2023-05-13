@@ -639,6 +639,14 @@ class TestSolver(unittest.TestCase):
         "ROORRYOWBWWGBYGRRBYBGGGGWWOYYBRBOWBYRWOGBYORYBOWYOGRGW"
     ]
 
+    unsolvable_cubes = [
+        "ORWOWGWYWGBGRGRBOBOWYGGBRRBYBRGOWOYGRYRBBGOOBYOYRYWYWW",
+        "UUUUUUUUULLLFFFRRRBBBLLLFBFRRRBFBLLLFFFRRRBBBDDDDDDDDD",
+        "UUBUUUUUULLLFFFRRRUBBLLLFFFRRRBBBLLLFFFRRRBBBDDDDDDDDD",
+        "UUUUUUUUULLLFFFRRRBBBLLLFFFRRRBBBLLLFFFRRBRBBDDDDDDDDD",
+        "UUUUUUUUULLLFFFRRRBBBLLFLFFRRRBBBLLLFFFRRRBBBDDDDDDDDD",
+    ]
+
     def test_cube_solver(self):
         for c in self.cubes:
             self._check_can_solve_cube(c)
@@ -651,6 +659,15 @@ class TestSolver(unittest.TestCase):
             self.assertTrue(c.is_solved(), msg="Failed to solve cube: " + orig)
         except Exception as e:
             self.fail(traceback.format_exc() + "original cube: " + orig)
+
+    def test_unsolvable_cube(self):
+        for c in self.unsolvable_cubes:
+            self._check_cube_fails_to_solve(c)
+
+    def _check_cube_fails_to_solve(self, orig):
+        c = Cube(orig)
+        solver = Solver(c)
+        self.assertRaisesRegex(Exception, "Stuck in loop - unsolvable cube", solver.solve)
 
 class TestOptimize(unittest.TestCase):
 

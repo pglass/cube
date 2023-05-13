@@ -101,7 +101,6 @@ Cube.
 ### Solver
 
 The solver implements the algorithm described
-[here](http://peter.stillhq.com/jasmine/rubikscubesolution.html) and
 [here](http://www.chessandpoker.com/rubiks-cube-solution.html). It is a
 layer-by-layer solution. First the front-face (the `z = 1` plane) is solved,
 then the middle layer (`z = 0`), and finally the back layer (`z = -1`). When
